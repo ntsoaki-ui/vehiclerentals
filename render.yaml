@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: vehicle-rental-system
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn vehicle:app
