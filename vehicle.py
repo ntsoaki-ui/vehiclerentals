@@ -1,17 +1,32 @@
 import os
-import json
-import random
-from datetime import datetime, timedelta
 from flask import Flask, render_template_string, request, redirect, url_for, session, flash, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# Flask app
 app = Flask(__name__, template_folder='.')
-app.config['SECRET_KEY'] = 'vehicle-rental-secret-key-2024'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vehicle_rental.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'vehicle-rental-secret-key-2024')
+
+# SQLite database path
+db_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'vehicle_rental.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize database
 db = SQLAlchemy(app)
 
+# Create database if it doesn't exist (important for Render)
+if not os.path.exists(db_path):
+    db.create_all()
+
+# Example route
+@app.route('/')
+def home():
+    return "Vehicle Rental System is running!"
+
+# Ensure Gunicorn sees 'app'
+if __name__ == '__main__':
+    app.run(debug=True)
 # Sesotho names for random generation
 SESOTHO_FIRST_NAMES = [
     'Thabo', 'Palesa', 'Lerato', 'Tumelo', 'Mpho', 'Khotso', 'Nthabiseng', 'Matshidiso',
